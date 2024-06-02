@@ -1,7 +1,7 @@
 ---
 title: |
   | **Assignment:**
-  | Classification of  using PCA, Clustering analysis, and ANOVA
+  | Classification of ... using PCA, Clustering analysis, and ANOVA
 author: "Group 7"
 date: "07/12/2023"
 output:

@@ -1,0 +1,860 @@
+---
+title: |
+  | **Assignment:**
+  | Classification of  using PCA, Clustering analysis, and ANOVA
+author: "Group 7"
+date: "07/12/2023"
+output:
+  pdf_document:
+    fig_caption: yes
+    number_sections: yes
+    keep_tex: no
+    toc: no
+    toc_depth: 3
+  html_document:
+    toc: no
+    toc_depth: '3'
+    df_print: paged
+jelcodes: A00, B11, C22
+fontsize: 12pt
+margin: 2cm
+linkcolor: Mahogany
+citecolor: Mahogany
+spacing: double
+bibliography: ref.bib 
+csl: apa.csl
+---
+
+<!-- # ```{r, out.width = "70%", fig.align='center', echo=FALSE, message=FALSE}
+# knitr::include_graphics("logo.png")
+# ``` -->
+
+
+|  **ID** 	|       **Member**       	|        **Faculty**       	|
+|:-------:	|:----------------------:	|:------------------------:	|
+| 2270578 	| Bui Thi Thu Ha         	| Biotechnology            	|
+| 2370500 	| Le Duc Khoan   	| Computer Science         	|
+| 2270522 	| Pham Nguyen Nhat Quang 	| Mechatronics Engineering 	|
+| 2370069 	| Nguyen Thi Thu Ha      	| Chemical Engineering     	|
+| 2370041 	| Nguyen Cam Uyen        	| Chemical Engineering     	|
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\listoffigures
+
+\newpage
+
+<!-- 
+
+Trang 1:
+
+title: "Assignment Report"
+
+author: "Group 7"
+
+year: "2023"
+
+program: "Department ..."
+
+Group member: 
+
+signature1: "person 1"
+
+signature2: "person 2"
+
+signature3: "person 3"
+
+signature4: "person 4"
+
+signature5: "person 5"
+
+-->
+
+
+
+<!-- 
+
+Trang 2: List of figures
+
+-->
+
+
+
+<!-- 
+
+Trang 3: List of tables
+
+-->
+
+
+<!-- 
+
+Trang 4
+
+-->
+
+# **Introduction**
+
+
+<!--
+http://doi.org/10.1109/TIM.2008.925015
+https://doi.org/10.1111/j.1755-0238.2012.00182.x
+https://doi.org/10.1016/j.jfca.2016.04.001
+https://link.springer.com/article/10.1007/s00217-005-1169-5
+-->
+
+# **Research Methods**
+
+## **Data description**
+
+The breast cancer dataset contains various features related to breast mass characteristics derived from digitized images of fine needle aspirate (FNA) of breast masses. It contains 32 variables, with 2 information variables: 
+1. ID: Identifier for each patient. 
+2. Diagnosis: The diagnosis of the breast mass (M = malignant, B = benign). 
+and 30 feature variables: 
+1. Radius (mean, se, worst): Mean of distances from the center to points on the perimeter. 
+2. Texture (mean, se, worst): Standard deviation of gray-scale values. 
+3. Perimeter (mean, se, worst): Perimeter of the mass. 
+4. Area (mean, se, worst): Area of the mass. 
+5. Smoothness (mean, se, worst): Local variation in radius lengths. 
+6. Compactness (mean, se, worst): 
+7. Concavity (mean, se, worst): Severity of concave portions of the contour. 
+8. Concave points (mean, se, worst): Number of concave portions of the contour. 
+9. Symmetry (mean, se, worst): Symmetry of the mass. 
+10. Fractal dimension (mean, se, worst): "Coastline approximation" - a measure of the complexity of the contour.
+<!--
+- Origin and method of collecting data on the chemical composition of wines from three cultivars.
+- Describe the structure of the data set, attributes and data columns.
+-->
+
+
+## **Data preprocessing using R**
+
+```{r setup, include=FALSE} 
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(ggplot2)
+library(FactoMineR)
+library(readxl)
+library(httpgd)
+library(factoextra)
+library(tidyverse)
+library(corrplot)
+library(dbplyr)
+library(readr)
+```
+
+```{r, echo=FALSE, warning=FALSE}
+# Import data
+data <- read_csv("data.csv")
+
+# Setting up the data
+data <- data[, c(2:32)]
+head(data)
+data <- data %>% 
+    rename("concave_points_se" = "concave points_se",
+          "concave_points_worst" = "concave points_worst",
+          "concave_points_mean" = "concave points_mean")
+```
+
+Remove NA rows:
+
+```{r}
+data <- na.omit(data)
+```
+
+```{r}
+cor_matrix <- cor(data[2:31])
+corrplot(cor_matrix, method = "color", tl.cex = 0.5, 
+         title = "Correlation Heatmap", mar = c(0,0,1,0))
+```
+
+<!--
+- Describe data preprocessing steps such as normalization and handling missing data (if any).
+- Explore data: statistical summaries, distribution plots, and correlations between components.
+-->
+
+### Data preparation
+
+### Data exploration
+
+
+## **Principal Component Analysis (PCA)**
+<!--
+- Explain the use of PCA to reduce data dimensionality.
+- Visualize PCA results and explain principal components.
+-->
+
+
+```{r}
+res.pca <- PCA(data, scale.unit=T, quali.sup="diagnosis", graph=F)
+```
+
+### Eigen values
+
+```{r}
+res.pca$eig
+
+# Draw eigenvalues dist
+barplot(
+  res.pca$eig[, 1], 
+  main = "Eigenvalues of Principal Components",
+  xlab = "Principal Components",
+  ylab = "Eigenvalues",
+  cex.names = 0.4,  # Adjust size of the labels if necessary
+  las = 2
+)
+
+# Draw eigenvalues dist
+barplot(
+  res.pca$eig[, 1][1:8], 
+  main = "Eigenvalues of 8 Highest Principal Components",
+  xlab = "Principal Components",
+  ylab = "Eigenvalues",
+  cex.names = 0.5,  # Adjust size of the labels if necessary
+)
+```
+
+### Dimension Description
+
+```{r}
+dimdesc(res.pca)
+```
+
+### PCA Graph
+
+```{r}
+corrplot(
+  res.pca$var$cos2, 
+  is.corr = F,
+  tl.cex = 0.5,
+  cl.cex = 0.5,
+  cl.pos = "r",
+  cl.ratio = 0.5,  # Adjust ratio to add space to the legend
+  cl.align.text = "l"  # Align the text to the left of the legend
+)
+```
+
+```{r}
+plot(
+  res.pca,
+  choix = c("ind"),
+  hab = "diagnosis",
+  invisible = c("var"),
+  cex = 1,
+  palette = c("red", "green"),
+  autoLab = c("no"),
+  title = "PCA Graph of Individuals",
+  label = c("none")
+)
+```
+
+```{r}
+plot(
+  res.pca,
+  choix = c("var"),
+  hab = "none",
+  invisible = c("ind"),
+  cex = 0.5,
+  autoLab = c("no"),
+  title = "PCA Graph of Variables"
+)
+```
+
+## **Hierarchical Clustering (HC)**
+<!--
+- Describe and perform Hierarchical Clustering to determine relationships between chemical components.
+-->
+
+One technique for studying clusters in the analysis of data is hierarchical clustering. Data is grouped using hierarchical clustering, which builds a hierarchy of groups. There are two approaches to construct this hierarchy: divisive (top-down), in which all data points begin in a single cluster and divide as we proceed down the hierarchy, or agglomerative (bottom-up), in which each data point forms a cluster and pairs of clusters are merged as we travel up the hierarchy. In this work, the linkage criterion is Ward's linkage, and we employ agglomerative hierarchical clustering. The linking criterion defines appropriate distance between sets of observations to use.
+
+
+```{r, tidy=FALSE, fig.align='center', fig.width=5, fig.height=5, fig.cap=c("Hierarchical Clustering plot", "Bar plot of Type vs. cluster percent")}
+res.hcpc <- HCPC(res.pca, nb.clust=2, graph = FALSE)
+
+fviz_dend(res.hcpc,
+    cex = 0.7,                     
+    labels_track_height = 0.8
+)
+  
+df.hcpc <- res.hcpc$data.clust
+  
+plot(df.hcpc$diagnosis, df.hcpc$clust, xlab = 'diagnosis', ylab = '% cluster')
+
+plot(df.hcpc$clust, df.hcpc$diagnosis, xlab = 'cluster', ylab = '% diagnosis')
+
+plot.HCPC(res.hcpc,choice='map',draw.tree=FALSE,title='Factor map')
+  
+res.hcpc$desc.var$quanti
+  
+res.hcpc$desc.axes$quanti
+```
+
+###  HC interpretation
+
+As a result of the cluster analysis, specific quantitative factors that identified the distinctive qualities and contributions of every cluster were found to exist. There are 2 cluster:
+
+- Cluster 1 contains about 90% of B tumors and 10% of M tumors.
+
+- Cluster 2 contains about 10% of B tumors and 90% of M tumors.
+
+First of all, Cluster 1, which is composed of more than 90% of benign tumors, has characteristics by having almost all values quite lower when compare to overall. Cluster 1 type are distinguished by characteristics that stand out: symmetry, fractal dimension, texture, smoothness, concavity, compactness, concave points, area and so on.
+
+Opposite to cluster 2, which consists primarily of malignant tumors, has unique characteristics that are indicated by increased almost all values relative to the dataset's average values. 
+
+
+## **Analysis of Variance (ANOVA)**
+
+Analysis of variance (ANOVA) is a statistical technique that allows us to test the null hypothesis that the means of any three or more groups are the same against the alternative hypothesis that they are not equal using information from their samples. The fundamental idea behind the ANOVA technique is to compare the degree of variation within each sample to the degree of variance between samples in order to determine whether the population means differ from one another. It is assumed that the samples used in the ANOVA model come from normal populations with similar variances. An ANOVA with a single factor between subjects is used when there is only one factor and the analysis has more than two levels and multiple subjects in both experimental conditions.
+
+# **Result**
+
+## **PCA and HC classification**
+<!--
+- Classification results based on PCA and HC.
+- Charts and tables illustrate the distinction between types of wine.
+-->
+
+### PCA interpretation
+
+#### Eigenvalues
+
+Eigenvalues, which are measurements of the variance explained by each main component, are important indicators in principal component analysis. Three principal components have been recognized in this investigation, and the variation they account for is shown by their associated eigenvalues. Notably, the first major component accounts for 38.85% of the variation in total, with the second and third accounting for 20.49% and 9.55% of the variance, respectively. Increased eigenvalues indicate a higher degree of information retention from the original dataset, highlighting the fact that PC1 contains the largest amount of variance derived from the wine data.
+
+#### Contributions
+
+Analysis of contributions reveals insights into links between continuous and categorical variable (Type) through the data table's display of the correlations between original variables and principal components. Their relevance is clarified by examining the contributions of the first three main components below.
+
+The first principle component (PC1), representing 38.85% of the variance, demonstrates strong correlations with variables like Flavanoids, Phenols, Dilution, Proline, and Hue. Notably, Flavanoids, Phenols, Dilution, and Proline exhibit high positive correlations, signifying their significant contributions to the observed separation or variability in the data along this component. Moreover, the categorical variable 'Type' shows a substantial relationship with PC1, emphasizing its role in differentiating between wine types.
+
+For the second principle component, it accounted for 20.49% of the variance, displays high correlations with variables such as Color, Alcohol, Proline, Ash, and Magnesium. Particularly, Color and Alcohol stand out with strong positive correlations, indicating their substantial contributions to the variation captured by PC2. Similarly, 'Type' showcases a robust relationship with PC2, underlining its importance in distinguishing between wine types along this component.
+
+Finally, the third principle component represented 9.55% of the variance, exhibits notable correlations with variables like Ash, Alcalinity, Nonflavanoids, Dilution, and Flavanoids. Notably, Ash and Alcalinity display high positive correlations, indicating their significant contributions to the variability represented by PC3. Although the categorical variable 'Type' also demonstrates differentiation along PC3, its impact is not as pronounced as observed in PC1 and PC2.
+
+### HC interpretation
+
+As a result of the cluster analysis, specific quantitative factors that identified the distinctive qualities and contributions of every cluster were found to exist.
+
+First of all, Cluster 1, which is composed of Type 3 wines, has distinctive characteristics by having significantly higher values in a variety of qualities. Cluster 1 wines (Type 3) are distinguished from other wines in the dataset by characteristics that stand out: malic acid, color intensity, nonflavanoid phenols, alkalinity of ash, proline, proanthocyanins, total phenols, hue, flavanoids, and OD280/OD315 of diluted wines.
+
+Cluster 2, which consists primarily of Type 2 wines, has unique characteristics that are indicated by increased Hue, Alcalinity, Dilution, and Ash values relative to the dataset's average values. On the other hand, this cluster shows lower values in Alcohol, Magnesium, Proline, Color intensity, and Malic acid when compared to the overall means of the dataset, highlighting its distinct characteristics within the dataset.
+
+Lastly, Cluster 3 of Type 1 wines, which are distinguished by greater amounts of Phenols, Alcohol, Proline, Flavanoids, Dilution, Proanthocyanins, Magnesium, Hue, Ash, Color intensity, and Malic acid. Its unique composition within the dataset is further highlighted by the fact that this cluster has lower levels of Alcalinity and Nonflavanoid phenols when compared to the dataset's overall averages.
+
+### Conclusion from PCA and HC
+
+The PCA analysis identified key variables (chemical components) that significantly contribute to the differentiation of wine types. PC1, PC2, and PC3 collectively explain a substantial portion of the variance in the dataset. Variables like Flavanoids, Phenols, Dilution, Proline, Color, Alcohol, Ash, Alcalinity, etc., exhibit strong correlations with these principal components and are crucial in distinguishing between different wine types.
+
+On the other hand, the hierarchical clustering analysis, along with associated quantitative variables and principal dimensions, provides a clear demarcation of wines into three distinct clusters (representing Types 1, 2, and 3). Each cluster exhibits unique characteristics based on the 13 attributes. These findings offer valuable insights into how different wine types/classes can be differentiated based on these chemical attributes, aiding in wine classification and potentially understanding the underlying characteristics that differentiate these types.
+
+## **ANOVA test**
+<!--
+- Use ANOVA to determine differences in chemical composition between types of wine.
+-->
+
+The aim is to test the significance of various chemical components across different wine types. These tests in R will provide insights into which variables significantly differ between wine types, aiding in the classification of wines based on their chemical compositions.
+
+### **Hypothesis 1:** Mean of Concave Points between benign and malignant tumors.
+
+-   Null Hypothesis (H0): There is no significant difference in Mean of Concave Points between 2 tumor types.
+-   Alternative Hypothesis (H1): There is a significant difference in Mean of Concave Points between 2 tumor types.
+
+#### Test:
+
+ANOVA for Mean of Concave Points among tumor types.
+
+```{r}
+# ANOVA for Mean of Concave Points among tumor types.
+h1 <- lm(
+  concave_points_mean ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h1)
+```
+
+#### Interpretation:
+
+The ANOVA test indicates a highly significant difference in Mean of Concave Points among different tumor types (p = 2.2e-16 \< 0.001). This suggests that Mean of Concave Points vary strongly between benign and malignant tumor. Then **reject Hypothesis**.
+
+#### Visualization:
+
+```{r}
+# Boxplot for Mean of Concave Points
+boxplot(
+  concave_points_mean ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Mean of Concave Pointst", 
+  main = "Mean of Concave Points across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "concave_points_mean",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Means of Concave Points",
+   label = c("none")
+)
+```
+
+We can see that there is significant difference of mean of concave points between malignant and benign breast tumors. The mean of concave points of malignant breast tumors is much higher than that of benign ones as in the Box Plot. Recall the variable PCA plot, the mean of concave points is strongly positive correlated with Dim 1, which is also true in the PCA graph of individuals as we can see almost all malignant breast tumors are aligned to the right of Dim 1. Hence, they have higher mean of concave points. All mentions above prove that a high number of concave points usually the sign of breast cancer.
+
+### **Hypothesis 2:** Mean of Concavity between benign and malignant tumors.
+
+-   Null Hypothesis (H0): There is no significant difference in Mean of Concavity between 2 tumor types.
+-   Alternative Hypothesis (H1): There is a significant difference in Mean of Concavity between 2 tumor types.
+
+#### Test:
+
+ANOVA for Mean of Concavity among tumor types.
+
+```{r}
+# ANOVA for Mean of Concavity among tumor types.
+h2 <- lm(
+  concavity_mean ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h2)
+```
+
+#### Interpretation:
+
+The ANOVA test indicates a highly significant difference in Mean of Concavity among different tumor types (p = 2.2e-16 \< 0.001). This suggests that Mean of Concavity vary strongly between benign and malignant tumor. Then **reject Hypothesis**.
+
+#### Visualization:
+
+```{r}
+# Boxplot for Mean of Concavity
+boxplot(
+  concavity_mean ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Mean of Concavity", 
+  main = "Mean of Concavity across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "concavity_mean",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Means of Concavity",
+   label = c("none")
+)
+```
+
+Just like Mean of Concave Points, the mean of concavity is quite different between malignant and benign breast tumors. The mean of concavity of malignant breast tumors is much higher than that of benign ones as in the Box Plot. Recall the variable PCA plot, the mean of concavity is also strongly positive correlated with Dim 1 similar to the mean of concave points. We can see in the PCA graph of individuals that almost all malignant breast tumors are aligned to the right of Dim 1. Therefore, the bigger size of tumor, the higher chance of a person to have breast cancer.
+
+### **Hypothesis 3:** Worst Concave Points between benign and malignant tumors.
+
+-   Null Hypothesis (H0): There is no significant difference in Worst Concave Points between 2 tumor types.
+-   Alternative Hypothesis (H1): There is a significant difference in Worst Concave Points between 2 tumor types.
+
+#### Test:
+
+ANOVA for Worst Concave Points among tumor types.
+
+```{r}
+# ANOVA for Worst Concave Points among tumor types.
+h3 <- lm(
+  concave_points_worst ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h3)
+```
+
+#### Interpretation:
+
+The ANOVA test indicates a highly significant difference in Worst Concave Points among different tumor types (p = 2.2e-16 \< 0.001). This suggests that Mean of Concavity vary strongly between benign and malignant tumor. Then **reject Hypothesis**.
+
+#### Visualization:
+
+```{r}
+# Boxplot for Worst Concave Points
+boxplot(
+  concave_points_worst ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Worst Concave Points", 
+  main = "Worst Concave Points across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "concavity_worst",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Worst Concave Points",
+   label = c("none")
+)
+```
+
+Similar to 2 stats of concavity mentioned above, the Worst Concave Points is different between 2 type of breast tumors. The Worst Concave Points of malignant breast tumors is much higher than that of benign ones as in the Box Plot. Also, the Worst Concave Points is positively correlated with Dim 1 and just like the concavity stats above, almost all malignant breast tumors are aligned to the right of Dim 1. Therefore, the worse concavity of tumor, the higher chance of a person to have breast cancer.
+
+### **Hypothesis 4:** Mean of Compactness between benign and malignant tumors.
+
+-   Null Hypothesis (H0): There is no significant difference in Mean of Compactness between 2 tumor types.
+-   Alternative Hypothesis (H1): There is a significant difference in Mean of Compactness between 2 tumor types.
+
+#### Test:
+
+ANOVA for Mean of Compactness among tumor types.
+
+```{r}
+# ANOVA for Mean of Compactness among tumor types.
+h4 <- lm(
+  compactness_mean ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h4)
+```
+
+#### Interpretation:
+
+The ANOVA test indicates a highly significant difference in Mean of Compactness among different tumor types (p = 2.2e-16 \< 0.001). This suggests that Mean of Compactness vary strongly between benign and malignant tumor. Then **reject Hypothesis**.
+
+#### Visualization:
+
+```{r}
+# Boxplot for Mean of Compactness
+boxplot(
+  compactness_mean ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Mean of Compactness", 
+  main = "Mean of Compactness across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "compactness_mean",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Means of Compactness",
+   label = c("none")
+)
+```
+
+Here, Mean of Compactness is different between 2 type of breast tumors. The Mean of Compactness of malignant breast tumors is also higher than that of benign ones as in the Box Plot. And, the Mean of Compactness is positively correlated with Dim 1 and just like all the concavity stats above, almost all malignant breast tumors are aligned to the right of Dim 1.
+
+### Other hypotheses on an variable between benign and malignant tumors.
+
+Similar to the analysis above and the Dimension Description of the PCA on the dataset, we can find some other variables that are:
+- Significantly different between benign and malignant tumors. 
+- Positively correlated with Dim 1 of PCA variable graph. Means that higher value correspond to higher chance of breast cancer.
+
+These variables are: 
+- perimeter_worst 
+- concavity_worst 
+- radius_worst 
+- perimeter_mean 
+- area_worst 
+- area_mean
+
+We will perform ANOVA analysis and visualize the relations of these variable below with corresponding order: \#### Worst Perimeter
+
+```{r}
+h4.1 <- lm(
+  perimeter_worst ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h4.1)
+
+# Boxplot for Worst Perimeter
+boxplot(
+  perimeter_worst ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Worst Perimeter", 
+  main = "Worst Perimeter across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "perimeter_worst",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Means of Worst Perimeter",
+   label = c("none")
+)
+```
+
+#### Worst Concavity
+
+```{r}
+h4.2 <- lm(
+  concavity_worst ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h4.2)
+
+# Boxplot for Worst Perimeter
+boxplot(
+  concavity_worst ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Worst Concavity", 
+  main = "Worst Concavity across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "concavity_worst",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Means of Worst Concavity",
+   label = c("none")
+)
+```
+
+#### Worst Radius
+
+```{r}
+h4.3 <- lm(
+  radius_worst ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h4.3)
+
+# Boxplot for Worst Radius
+boxplot(
+  radius_worst ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Worst Radius", 
+  main = "Worst Radius across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "radius_worst",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Means of Worst Radius",
+   label = c("none")
+)
+```
+
+#### Mean Perimeter
+
+```{r}
+h4.4 <- lm(
+  perimeter_mean ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h4.4)
+
+# Boxplot for Mean Perimeter
+boxplot(
+  perimeter_mean ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Mean Perimeter", 
+  main = "Mean Perimeter across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "perimeter_mean",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Means of Mean Perimeter",
+   label = c("none")
+)
+```
+
+#### Worst Area
+
+```{r}
+h4.5 <- lm(
+  area_worst ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h4.5)
+
+# Boxplot for Worst Area
+boxplot(
+  area_worst ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Worst Area", 
+  main = "Worst Area across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "area_worst",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Means of Worst Area",
+   label = c("none")
+)
+```
+
+#### Mean Area
+
+```{r}
+h4.6 <- lm(
+  area_mean ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h4.6)
+
+# Boxplot for Mean Area
+boxplot(
+  area_mean ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Mean Area", 
+  main = "Mean Area across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "area_mean",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Means of Mean Area",
+   label = c("none")
+)
+```
+
+### **Hypothesis 5:** Mean Fractal dimension between benign and malignant tumors.
+
+-   Null Hypothesis (H0): There is no significant difference in Mean Fractal dimension between 2 tumor types.
+-   Alternative Hypothesis (H1): There is a significant difference in Mean Fractal dimension between 2 tumor types.
+
+#### Test:
+
+ANOVA for Mean Fractal dimension among tumor types.
+
+```{r}
+# ANOVA for Mean Fractal dimension among tumor types.
+h5 <- lm(
+  fractal_dimension_mean ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h5)
+```
+
+#### Interpretation:
+
+Eventhough the high correlations with the second principal component
+(Dim.2) suggest that Mean Fractal dimension significantly contribute to
+the variability captured by Dim 2. However, the high p-value in the
+ANOVA test indicates that the Mean Fractal dimension does not
+significantly differ between the diagnosed groups (malignant and benign)
+when considered alone. (p = 0.7599). Then **accept Hypothesis**.
+
+#### Visualization:
+
+```{r}
+# Boxplot for Mean Fractal dimension
+boxplot(
+  fractal_dimension_mean~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumor Type", 
+  ylab = "Mean Fractal dimension", 
+  main = "Mean Fractal dimension across Tumor Types"
+)
+
+plot.PCA(res.pca,
+   choix = "ind",
+   hab = "fractal_dimension_mean",
+   invisible = c("var"),
+   cex = 1,
+   autoLab = c("no"),
+   title = "PCA Graph of Individuals With Respect to Mean Fractal dimension",
+   label = c("none")
+)
+```
+
+For this variables, the high correlations with the second principal component (Dim.2) does not indicate that this variable varies across different tumor types. It suggests that Mean Fractal dimension significantly contribute to the variability captured by Dim 2. As we can see in the box plot that the mean values of 2 types are no different at all. Therefore we cannot reject the null hypothesis.
+
+### **Hypothesis 6:** All 3 Fractal dimension variables effect on benign and malignant tumors.
+
+-   Null Hypothesis (H0): There is no association between the diagnosis of the patients and their combined fractal dimension values.
+-   Alternative Hypothesis (H1): There is an association between the diagnosis of the patients and their combined fractal dimension values.
+
+#### Test:
+
+ANOVA for 3 Mean Fractal dimension variables among tumor types.
+
+```{r}
+# ANOVA for 3 Mean Fractal dimension variables among tumor types.
+h6 <- lm(
+  fractal_dimension_mean + fractal_dimension_se + fractal_dimension_worst ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h6)
+```
+
+#### Interpretation:
+
+When we used the combination of the 3 variables of Fractal dimension, this leads to a small p-value (2.155e-08 \< 0.001), then there must be an association between the diagnosis of the patients and their combined fractal dimension values =\> **reject Hypothesis**.
+
+# **Conclusion and Discussion**
+
+## **Summary of results**
+<!--
+- Summarize important findings from analysis and testing.
+- Evaluate the level of success of the classification and the strengths/weaknesses of the method.
+-->
+
+### Keypoints from analysis and testing
+
+The findings, particularly from PCA, delineate the pivotal role of specific chemical components in shaping the differentiation of wine types. PC1, chiefly influenced by Total Phenols, Flavonoid Phenols, Proanthocyanins, and OD280/OD315, predominantly reflects taste intensity. This implies that the strength of taste emerges as a defining characteristic in classifying wines. Conversely, PC2, representing alcohol and fermentation levels through variables such as Alcohol Content, Proline, Color Intensity, Ash Levels, and Magnesium Levels, underscores the importance of fermentation-related attributes in delineating wine types.
+
+With hierarchical clustering analysis, the study further accentuates the distinctiveness of each wine type, as evident from the clear demarcation into three discernible clusters (Types 1, 2, and 3). Each cluster exhibits unique chemical characteristics, corroborating the notion that the chemical profile serves as a reliable marker for classification.
+
+The conducted ANOVA tests further validate and emphasize the significance of these chemical components in distinguishing between the wine types. Variables such as Flavanoids, Alcohol content, Color intensity, Proline content, and Proanthocyanins exhibit distinctive levels among the wine types, significantly contributing to the classification based on their chemical profiles. Despite Ash and Alcalinity offering limited insights into the differentiation of certain wine types individually, their collective data elucidates similarities among these types.
+
+### Statistical significance to the real-world problem
+
+For the purpose of improving strength of the taste of wines: Winemakers can leverage this work to tailor the Flavanoid content in wines, influencing the taste, aroma, and overall sensory experience. Consumers, on the other hand, can use Flavanoid levels as a factor in selecting wines based on their preferred flavor profiles. Proline is associated with taste and quality. Wine manufacturers can use this information to craft wines with specific flavor profiles. Consumers looking for particular taste characteristics can consider Proline content in their wine choices. The significant differences in Proanthocyanins content among wine types indicate that this component is a key factor in differentiating between the wines. Understanding the role of Proanthocyanins is valuable for vintner aiming to create wines with specific taste profiles.
+
+With the aim of levitating alcohol and fermentation levels: Winemakers can optimize Color intensity to create visually distinct wines. Consumers may consider color as a factor in wine selection, associating it with taste preferences or the overall appeal of the wine. Producers of wines can adjust Alcohol content to create wines with specific characteristics, catering to different preferences and occasions. Consumers may use this information to make choices based on desired Alcohol levels in wines. The significant relationships between Ash, Alcalinity, and wine types suggest that these components contribute to the classification of wines. Wine producers can use this information to adjust and optimize these elements to achieve desired characteristics in their wines. 
+
+In essence, the statistical significance of these chemical components in wine types provides actionable insights for both wine merchants and consumers. It enables winemakers to craft wines with specific characteristics and empowers consumers to make informed choices based on their preferences, whether related to flavor, visual appeal, or health considerations.
+
+## **Comments and Limitations**
+<!--
+- Evaluate the reliability of the results and limitations of the study.
+- Propose directions for further development and research.
+-->
+
+### Recommendations on data quality
+
+In the pursuit of comprehensive data analysis, refining or improving the data table is crucial: firstly, ensuring consistency across columns, especially in categorical variables like 'Type,' to eliminate discrepancies and ensure accurate labeling. Next, leveraging feature engineering techniques to enhance analysis depth by creating new features or interaction terms based on domain knowledge. Employing cross-validation techniques becomes crucial for predictive modeling, assessing model performance comprehensively for robust findings. Thorough documentation of data preprocessing steps, including handling missing values and outliers, ensures transparency and reproducibility. Additionally, establishing a systematic process for ongoing dataset maintenance and updates guarantees sustained data quality and accuracy, especially for periodically updated datasets. These practices collectively fortify the integrity and reliability of the dataset and analyses conducted upon it.
+
+### Classification method limitations
+
+While the application of principal component analysis (PCA) is combined with hierarchical clustering and ANOVA provided the ease to visualize the classification principles and choosing the aspects of the data that contributed most, this method is
+incapable of generate gratifying classification results, and no correct recognition was given out in the research. Thus, this study has limited capacity for precise interpretation, and require integratation of additional analytical techniques or refining existing ones might enhance the method's precision, allowing for more precise differentiation among wine types.
+
+For instance, principal component analysis was used in the k-nearest neighbor classification of a study on the classification of wine types using the same dataset in order to address the significant multicollinearity among the explanatory factors (@barth_katumullage_yang_cao_2021). According to the study, when kNN and PCA are merged, the resulting classifier is significantly easier to understand and performs comparably to kNN across all 13 variables.
+
+The two stages of the wine classification process used by (@4537164 )were: (1) principal component analysis or wavelet transform to extract features from the aroma data; and (2) linear discriminant analysis, radial basis function neural networks, and support vector machines to identify patterns in the data.
+
+\newpage
+
+# **References**
+<!--
+- List of documents, books, articles used and referenced during the research process.
+-->
+
+

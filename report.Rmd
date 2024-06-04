@@ -145,6 +145,7 @@ library(tidyverse)
 library(corrplot)
 library(dbplyr)
 library(readr)
+library(cluster)
 ```
 
 ```{r, echo=FALSE, warning=FALSE}
@@ -291,6 +292,80 @@ plot.HCPC(res.hcpc,choice='map',draw.tree=FALSE,title='Factor map')
 res.hcpc$desc.var$quanti
   
 res.hcpc$desc.axes$quanti
+```
+
+#### Find best criteria for clustering
+```{r}
+clean_data <- data[2:31]
+scaled_data <- scale(clean_data)
+distance <- dist(scaled_data, method="euclidean")
+```
+We chose multiple methods to calculate the distance between the clusters such as average, single, complete and ward.
+
+- Average: Measures the average (mean) distance between each observation in each cluster, weighted by the number of observations in each cluster
+
+- Single: Measures the distance between the two closest points in each cluster
+
+- Complete: Measures the distance between the two most distant points in each cluster
+
+- Ward: Minimizes within cluster variance (sum of errors). Clusters are combined according to smallest between cluster distance.
+```{r, tidy=FALSE, fig.align='center', fig.width=5, fig.height=5,}
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+ac <- function(x) {
+  agnes(scaled_data, method = x)$ac
+}
+
+map_dbl(m, ac)
+```
+Here's a brief analysis of each method based on your results:
+
+1. **Average (0.8632181)**:
+  - The average linkage method (or UPGMA) considers the average distance between all pairs of objects from two clusters before merging them.
+  
+  - An agglomerative coefficient of 0.8632181 indicates a relatively good clustering structure but not the best among the methods provided. It means that the clusters are fairly well-defined but there might be some overlap.
+
+2. **Single (0.8054129)**:
+  - The single linkage method (or nearest neighbor) considers the minimum distance between objects from two clusters.
+
+  - An agglomerative coefficient of 0.8054129 is the lowest among the four methods, suggesting that the clusters formed by this method are less well-defined. This method often results in long, "chain-like" clusters, which may not be ideal for all datasets.
+
+3. **Complete (0.9006205)**:
+  - The complete linkage method (or farthest neighbor) considers the maximum distance between objects from two clusters.
+  
+  - An agglomerative coefficient of 0.9006205 is quite high, indicating that this method produces well-defined clusters. This method tends to create compact clusters with small diameters, which can be beneficial for many applications.
+
+4. **Ward (0.9739327)**:
+  - Ward's method aims to minimize the total within-cluster variance. It is generally considered one of the most effective methods for hierarchical clustering.
+  
+  - An agglomerative coefficient of 0.9739327 is the highest among the methods, indicating that Ward's method has produced the most well-defined clusters for your data. This method is typically effective in producing clusters with small within-cluster variance.
+
+Based on the agglomerative coefficients:
+
+- **Ward's method** is the best choice for your data, as it has the highest coefficient (0.9739327), indicating the most well-defined clustering structure.
+- **Complete linkage** also performs well with a high coefficient (0.9006205).
+- **Average linkage** is decent but not as strong as complete or Ward's method.
+- **Single linkage** has the lowest coefficient (0.8054129), suggesting it is the least effective method for your dataset in terms of forming well-defined clusters.
+
+You might consider using Ward's method for clustering your data due to its superior performance in your analysis.
+```{r, fig.align='center', fig.width=5, fig.height=5, fig.cap=c("Hierarchical Clustering with Single Linkage")}
+hc <- agnes(scaled_data, method = "single")
+sub_grp <- cutree(hc, k = 2)
+fviz_cluster(list(data = scaled_data, cluster = sub_grp))
+```
+```{r, fig.align='center', fig.width=5, fig.height=5, fig.cap=c("Hierarchical Clustering with Ward Linkage")}
+hc <- agnes(scaled_data, method = "ward")
+sub_grp <- cutree(hc, k = 2)
+fviz_cluster(list(data = scaled_data, cluster = sub_grp))
+```
+Accuracy with Ward Linkage
+```{r, fig.align='center', fig.width=5, fig.height=5}
+label <- factor(data$diagnosis)
+label_vector <- match(label, unique(label))
+comparison <- label_vector == sub_grp
+acc <- table(comparison)
+acc
 ```
 
 ###  HC interpretation

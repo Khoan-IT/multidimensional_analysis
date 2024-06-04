@@ -98,6 +98,17 @@ Trang 4
 -->
 
 # **Introduction**
+Medical analysis encompasses a wide array of methodologies and technologies aimed at understanding, diagnosing, treating, and preventing diseases and medical conditions. It plays a pivotal role in healthcare, utilizing various data sources such as clinical records, medical imaging, genetic information, and laboratory tests to derive insights that aid healthcare professionals in delivering optimal patient care. One significant application of medical analysis is in the field of oncology, particularly in the diagnosis and treatment of breast cancer. The Breast Cancer Wisconsin (Diagnostic) Data Set serves as a fundamental resource in this domain, offering a comprehensive collection of clinical and imaging data derived from fine needle aspirates (FNAs) of breast masses. This dataset, widely utilized in machine learning and data mining research, provides detailed features describing cell nuclei characteristics, allowing for the development and validation of predictive models to distinguish between benign and malignant breast tumors. Through medical analysis of datasets like the Breast Cancer Wisconsin (Diagnostic) Data Set, researchers and healthcare practitioners strive to improve early detection, prognosis, and treatment outcomes for breast cancer patients, ultimately advancing the field of oncology and enhancing patient care.
+
+In the domain of medical analysis, the integration of advanced methodologies such as Principal Component Analysis (PCA), Hierarchical Clustering play pivotal roles in unraveling complex datasets like the Breast Cancer Wisconsin (Diagnostic) Data Set. This report embarks on an exploration of these analytical techniques and their application in unraveling crucial insights into breast cancer diagnosis and prognosis.
+
+PCA serves as a cornerstone in dimensionality reduction, offering a means to distill the multidimensional complexity of medical datasets into a more manageable form. By transforming the original features into a smaller set of uncorrelated variables, PCA facilitates visualization, pattern recognition, and the identification of critical factors contributing to breast cancer diagnosis. In the context of the Breast Cancer Wisconsin (Diagnostic) Data Set, PCA holds promise in elucidating key biomarkers and phenotypic traits indicative of tumor malignancy.
+
+Complementing PCA, Hierarchical Clustering offers a powerful method for uncovering inherent structures within the dataset. By grouping similar data points into clusters based on their similarity or dissimilarity, Hierarchical Clustering provides insights into the natural organization of the data, potentially revealing distinct subgroups of breast tumors or patient profiles. Through this clustering approach, patterns and correlations among variables can be discerned, contributing to a deeper understanding of breast cancer heterogeneity.
+
+In addition to PCA and Hierarchical Clustering, the inclusion of ANOVA adds another layer of statistical rigor to the analysis. ANOVA enables the assessment of differences in means across multiple groups, allowing for the identification of significant variations in clinical or molecular features among different tumor types or patient cohorts. By incorporating ANOVA into the analytical framework, this report aims to elucidate the underlying factors driving breast cancer progression and treatment response, ultimately guiding clinical decision-making and personalized therapeutic interventions.
+
+Through the integration of PCA, Hierarchical Clustering, and ANOVA, this report endeavors to unravel the complex landscape of breast cancer and pave the way for more precise diagnostic and therapeutic strategies. By leveraging these advanced analytical techniques, healthcare practitioners can gain deeper insights into the underlying mechanisms of breast cancer pathogenesis, ultimately leading to improved patient outcomes and enhanced precision in clinical practice.
 
 
 <!--
@@ -111,20 +122,40 @@ https://link.springer.com/article/10.1007/s00217-005-1169-5
 
 ## **Data description**
 
-The breast cancer dataset contains various features related to breast mass characteristics derived from digitized images of fine needle aspirate (FNA) of breast masses. It contains 32 variables, with 2 information variables: 
+The Breast Cancer Wisconsin (Diagnostic) Data Set is a well-known dataset used for machine learning and data mining tasks, particularly in the context of medical research. It provides data for breast cancer diagnosis, where each sample is described by a set of features derived from digitized images of fine needle aspirates (FNAs) of breast masses. This dataset is widely used for developing and testing classification algorithms aimed at distinguishing between benign and malignant tumors.
+
+The breast cancer datatset contains 569 samples of breast cancer cases. There is no missing attribute values in the dataset. Each sample is described by 32 variables, with 2 information variables: 
+
 1. ID: Identifier for each patient. 
+
 2. Diagnosis: The diagnosis of the breast mass (M = malignant, B = benign). 
-and 30 feature variables: 
-1. Radius (mean, se, worst): Mean of distances from the center to points on the perimeter. 
-2. Texture (mean, se, worst): Standard deviation of gray-scale values. 
-3. Perimeter (mean, se, worst): Perimeter of the mass. 
-4. Area (mean, se, worst): Area of the mass. 
-5. Smoothness (mean, se, worst): Local variation in radius lengths. 
-6. Compactness (mean, se, worst): 
-7. Concavity (mean, se, worst): Severity of concave portions of the contour. 
-8. Concave points (mean, se, worst): Number of concave portions of the contour. 
-9. Symmetry (mean, se, worst): Symmetry of the mass. 
-10. Fractal dimension (mean, se, worst): "Coastline approximation" - a measure of the complexity of the contour.
+
+and 30 numerical feature variables, resulting by computing 10 real-valued features in 3 metrics (mean, worst and se value): 
+
+1. Radius: The radius of an individual nucleus is measured by averaging the length of radius line segments defined by centroid and individual mass points.
+
+2. Texture: The texture of the cell nucleus is measured by finding the variance of the gray scale intensities in the component pixels
+
+3. Perimeter: The total distance between the mass points constitutes the nuclear perimeter.
+
+4. Area: Nuclear area is measured simply by counting the number of pixels on the interior of the mass and adding one-half of the pixels in the perimeter.
+
+5. Smoothness: The smoothness of a nuclear contour is quantified by measuring the difference between the length of a radial line and the mean length of the lines surrounding it. This is similar to the curvature energy computation in the mass.
+
+6. Compactness: Compactness is a shape descriptor used to quantify how closely an object's shape resembles a circle. It combines perimeter and area to measure the compactness of cell nuclei using the formula perimeter^2/area. This dimensionless value is minimized by a perfect circle and increases with the irregularity of the boundary. However, this measure also increases for elongated cell nuclei, which do not necessarily indicate a higher likelihood of malignancy. Additionally, the feature tends to be biased upward for small cells due to decreased accuracy caused by digitization. To address the fact that no single shape measurement fully captures the concept of "irregularity," we employ several different shape features.
+
+7. Concavity: In a further attempt to capture shape information, we measure the number and severity of concavities or indentations in a cell nucleus by drawing chords between non-adjacent contour points and assessing how much the actual boundary of the nucleus deviates inward from each chord. This parameter is significantly influenced by the length of these chords, with shorter chords better capturing small concavities. We chose to emphasize small indentations since larger shape irregularities are already addressed by other features.	
+
+8. Concave points: This feature is similar to Concavity but measures only the number, rather than the magnitude, of contour concavities.
+
+9. Symmetry: To measure symmetry, we first identify the major axis, which is the longest chord passing through the center of the cell. We then measure the difference in lengths between lines drawn perpendicular to the major axis and extending to the cell boundary in both directions. Special attention is given to cases where the major axis intersects the cell boundary due to a concavity.
+
+10. Fractal dimension: The fractal dimension of a cell is approximated using the "coastline approximation".9 The perimeter of the nucleus is measured using increasingly larger 'rulers. As the ruler size increases, decreasing the precision of the measurement, the observed perimeter decreases. Plotting these to values on a log scale and measuring the downward slope gives (the negative of) an approximation to the fractal dimension. As with all the shape features, a higher value corresponds to a less regular contour and thus to a higher probability of malignancy.
+
+The mean value, extreme (largest) value (mean of the three largest values) and standard error (se) of each feature are computed for each image. The extreme values are the most intuitively useful for the problem at hand, since only a few malignant cells may occur in a given sample.
+
+The second attribute in the dataset, which is Diagnosis variable, serves as the class identifier, with values in 2 distinct types: M is Malignant and B is Benign. The class distribution indicates that there are 357 instances for class B and 212 instances for class M.
+
 <!--
 - Origin and method of collecting data on the chemical composition of wines from three cultivars.
 - Describe the structure of the data set, attributes and data columns.
@@ -180,7 +211,72 @@ corrplot(cor_matrix, method = "color", tl.cex = 0.5,
 ### Data preparation
 
 ### Data exploration
+* Boxplot 
 
+
+```{r, include=FALSE, message=FALSE}
+cap = c()
+
+for (col in colnames(data)){
+  cap[col] <- paste("Boxplot of Diagnosis vs.", gsub('_', ' ', colnames(data[col])))
+  #cap[col] <- paste("$Boxplot of Diagnosis vs.", gsub('_', '\\_', colnames(data[col])), '$')
+}
+```
+
+```{r, tidy=FALSE, fig.align='center', fig.width=4, fig.height=4, fig.cap=cap[2:31]}
+for (col in colnames(data)){
+  if (col != 'diagnosis'){
+    boxplot(unlist(data[, col], use.names=FALSE) ~ data$diagnosis, xlab='Diagnosis', ylab=col, main = NULL)
+  }
+}
+```
+* Histogram 
+
+```{r, include=FALSE, message=FALSE}
+cap = c()
+
+for (col in colnames(data)){
+  cap[col] <- paste("Histogram of", gsub('_', ' ', colnames(data[col])))
+  #cap[col] <- paste("$\\text{Histogram of", gsub('_', '_', colnames(data[col])), '}$')
+  #cap[col] <- paste("$\\text{Histogram of", colnames(data[col]), '}$')
+}
+```
+
+```{r, tidy=FALSE, fig.align='center', fig.width=4, fig.height=4, fig.cap=cap}
+for (col in colnames(data)){
+  if(col != 'diagnosis'){
+    hist(unlist(data[, col], use.names=FALSE), xlab=col, main = NULL)
+  }
+  else{
+    barplot(table(data[, col]), xlab=col, ylab='frequency', main = NULL)
+  }
+}
+```
+
+* Scatter plot (pair)
+
+```{r, tidy=FALSE, fig.align='center', fig.width=100, fig.height=100, fig.cap="Scatter plot of wine dataset"}
+  pairs(
+    subset(data, select=-diagnosis),
+    col = hcl.colors(3, "Temps")[data$diagnosis],
+    cex=0.5,
+    main = NULL
+  )
+```
+
+* Correlation plot
+
+```{r,  tidy=FALSE, fig.align='center', fig.width=5, fig.height=5, fig.cap="Correlation plot of wine dataset"}
+data.cor <- cor(data[-1], method = "pearson")
+corrplot(
+  data.cor, 
+  is.corr=F, 
+  type = "lower", 
+  tl.cex = 0.5, 
+  cl.cex = 0.5, 
+  main = NULL
+)
+```
 
 ## **Principal Component Analysis (PCA)**
 <!--

@@ -623,15 +623,23 @@ Here, Mean of Compactness is different between 2 type of breast tumors. The Mean
 ### Other hypotheses on an variable between benign and malignant tumors.
 
 Similar to the analysis above and the Dimension Description of the PCA on the dataset, we can find some other variables that are:
+
 - Significantly different between benign and malignant tumors. 
+
 - Positively correlated with Dim 1 of PCA variable graph. Means that higher value correspond to higher chance of breast cancer.
 
 These variables are: 
+
 - perimeter_worst 
+
 - concavity_worst 
+
 - radius_worst 
+
 - perimeter_mean 
+
 - area_worst 
+
 - area_mean
 
 We will perform ANOVA analysis and visualize the relations of these variable below with corresponding order: \#### Worst Perimeter
@@ -881,6 +889,80 @@ anova(h6)
 #### Interpretation:
 
 When we used the combination of the 3 variables of Fractal dimension, this leads to a small p-value (2.155e-08 \< 0.001), then there must be an association between the diagnosis of the patients and their combined fractal dimension values =\> **reject Hypothesis**.
+
+### **Hypothesis 7:** Worst smoothness and symmetry effect on benign and malignant tumors.
+
+-   Null Hypothesis (H0): There is no association between the diagnosis of the patients and their combined worst smoothness and worst smoothness.
+-   Alternative Hypothesis (H1): There is an association between the diagnosis of the patients and their combined worst smoothness and worst smoothness.
+
+#### Test:
+
+ANOVA for worst smoothness and symmetry among tumor types.
+
+```{r}
+# ANOVA for worst smoothness and symmetry among tumor types.
+h7 <- lm(
+  smoothness_worst + symmetry_worst  ~ as.factor(diagnosis), 
+  data = data
+)
+anova(h7)
+```
+
+#### Interpretation:
+
+When we used the combination of worst smoothness and symmetric, this leads to a small p-value (2.2e-16 \< 0.001), then there must be an association between the diagnosis of the patients and their combined worst smoothness and symmetry =\> **reject Hypothesis**.
+
+### **Hypothesis 8:** Mean of Smoothness and perimeter for benign and malignant tumors classification
+
+#### Hypothesis
+
+*   Null Hypothesis (H0): There is no significant relationship between mean of smoothness and perimeter with benign andmalignant tumors.
+
+*   Alternative Hypothesis (H1): There is significant relationship between mean of smoothness and perimeter with benign and malignant tumors.
+
+```{r}
+    # Correlation tests or t-tests comparing mean of smoothness and perimeter across benign and malignant tumors.
+    label <- factor(data$diagnosis)
+    label <- match(label, unique(label))
+    cor.test(data$perimeter_mean, data$smoothness_mean)
+
+    oneway.test(data$perimeter_mean ~ as.factor(label))
+    
+    oneway.test(data$smoothness_mean ~ as.factor(label))
+```
+#### Interpretation
+
+-  Pearson’s correlation and ANOVA both reveal significant relationships between mean of smoothness, perimeter
+and tumors (p < 0.001) =\> **reject Hypothesis**. There’s a significant correlation between mean of smoothness and mean of perimeter.
+Additionally, both variables significantly differ among tumors.
+
+#### Visualization
+```{r}
+# Scatterplot for Alcalinity
+plot(smoothness_mean ~ as.factor(diagnosis), data = data, xlab = "Tumors", ylab = "Mean of smoothness", main = "Mean of smoothness across Tumors")
+plot(perimeter_mean ~ as.factor(diagnosis), data = data, xlab = "Tumors", ylab = "Mean of perimeter", main = "Mean of perimeter cross Tumors")
+
+
+plot.PCA(res.pca,
+  choix = "ind",
+  hab = "smoothness_mean",
+  invisible = c("var"),
+  cex = 1,
+  autoLab = c("no"),
+  title = "PCA Graph of Individuals With Respect to mean of smoothness",
+  label = c("none")
+)
+
+plot.PCA(res.pca,
+  choix = "ind",
+  hab = "perimeter_mean",
+  invisible = c("var"),
+  cex = 1,
+  autoLab = c("no"),
+  title = "PCA Graph of Individuals With Respect to mean of perimeter",
+  label = c("none")
+)
+```
 
 # **Conclusion and Discussion**
 

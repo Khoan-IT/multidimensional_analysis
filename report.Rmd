@@ -142,15 +142,23 @@ and 30 numerical feature variables, resulting by computing 10 real-valued featur
 
 5. Smoothness: The smoothness of a nuclear contour is quantified by measuring the difference between the length of a radial line and the mean length of the lines surrounding it. This is similar to the curvature energy computation in the mass.
 
+![Radial Lines used for Smoothness Computation](image/smoothness.png){width=30%}
+
 6. Compactness: Compactness is a shape descriptor used to quantify how closely an object's shape resembles a circle. It combines perimeter and area to measure the compactness of cell nuclei using the formula perimeter^2/area. This dimensionless value is minimized by a perfect circle and increases with the irregularity of the boundary. However, this measure also increases for elongated cell nuclei, which do not necessarily indicate a higher likelihood of malignancy. Additionally, the feature tends to be biased upward for small cells due to decreased accuracy caused by digitization. To address the fact that no single shape measurement fully captures the concept of "irregularity," we employ several different shape features.
 
 7. Concavity: In a further attempt to capture shape information, we measure the number and severity of concavities or indentations in a cell nucleus by drawing chords between non-adjacent contour points and assessing how much the actual boundary of the nucleus deviates inward from each chord. This parameter is significantly influenced by the length of these chords, with shorter chords better capturing small concavities. We chose to emphasize small indentations since larger shape irregularities are already addressed by other features.	
+
+![Chords used to Compute Concavity](image/concavity.png){width=30%}
 
 8. Concave points: This feature is similar to Concavity but measures only the number, rather than the magnitude, of contour concavities.
 
 9. Symmetry: To measure symmetry, we first identify the major axis, which is the longest chord passing through the center of the cell. We then measure the difference in lengths between lines drawn perpendicular to the major axis and extending to the cell boundary in both directions. Special attention is given to cases where the major axis intersects the cell boundary due to a concavity.
 
+![Segments used in Symmetry Computation](image/symmetry.png){width=30%}
+
 10. Fractal dimension: The fractal dimension of a cell is approximated using the "coastline approximation".9 The perimeter of the nucleus is measured using increasingly larger 'rulers. As the ruler size increases, decreasing the precision of the measurement, the observed perimeter decreases. Plotting these to values on a log scale and measuring the downward slope gives (the negative of) an approximation to the fractal dimension. As with all the shape features, a higher value corresponds to a less regular contour and thus to a higher probability of malignancy.
+
+![Sequence of Measurements for Computing Fractal Dimension](image/fractal_dimension.png){width=90%}
 
 The mean value, extreme (largest) value (mean of the three largest values) and standard error (se) of each feature are computed for each image. The extreme values are the most intuitively useful for the problem at hand, since only a few malignant cells may occur in a given sample.
 
@@ -255,7 +263,7 @@ for (col in colnames(data)){
 
 * Scatter plot (pair)
 
-```{r, tidy=FALSE, fig.align='center', fig.width=100, fig.height=100, fig.cap="Scatter plot of wine dataset"}
+```{r, tidy=FALSE, fig.align='center', fig.width=100, fig.height=100, fig.cap="Scatter plot of breast cancer dataset"}
   pairs(
     subset(data, select=-diagnosis),
     col = hcl.colors(3, "Temps")[data$diagnosis],
@@ -266,7 +274,7 @@ for (col in colnames(data)){
 
 * Correlation plot
 
-```{r,  tidy=FALSE, fig.align='center', fig.width=5, fig.height=5, fig.cap="Correlation plot of wine dataset"}
+```{r,  tidy=FALSE, fig.align='center', fig.width=5, fig.height=5, fig.cap="Correlation plot of breast cancer dataset"}
 data.cor <- cor(data[-1], method = "pearson")
 corrplot(
   data.cor, 

@@ -34,8 +34,8 @@ csl: apa.csl
 |:-------:	|:----------------------:	|:----------------: |
 | 2370500 	| Le Duc Khoan   	        | Computer Science  |
 | 2270522 	| Tran Trung Thai       	| Computer Science  |
-| 2370069 	| Ngo Minh Hong Thai     	| Computer Science  |
-| 2370041 	| Huy        	| Computer Science  |
+| 1912046 	| Ngo Minh Hong Thai     	| Computer Science  |
+| 2370041 	| Tran Hoang Nhat Huy    	| Computer Science  |
 
 \newpage
 
@@ -190,9 +190,9 @@ print(missing_values)
 data <- na.omit(data)
 ```
 
-<!--
 * Outliers
 
+<!--
 ```{r}
 library(rstatix)
 
@@ -228,7 +228,7 @@ for (col in colnames(data)){
 }
 ```
 
-```{r, tidy=FALSE, fig.align='center', fig.width=5, fig.height=5, fig.cap=cap[2:14]}
+```{r, tidy=FALSE, fig.align='center', fig.width=4, fig.height=4, fig.cap=cap[2:31]}
 for (col in colnames(data)){
   if (col != 'diagnosis'){
     # boxplot(df.clean[, col], main=col)
@@ -249,7 +249,7 @@ for (col in colnames(data)){
 }
 ```
 
-```{r, tidy=FALSE, fig.align='center', fig.width=5, fig.height=5, fig.cap=cap[1:14]}
+```{r, tidy=FALSE, fig.align='center', fig.width=4, fig.height=4, fig.cap=cap}
 for (col in colnames(data)){
   if(col != 'diagnosis'){
     hist(data[, col], xlab=col, main = NULL)
@@ -260,6 +260,7 @@ for (col in colnames(data)){
 }
 ```
 
+<!--
 * Scatter plot (pair)
 
 ```{r, tidy=FALSE, fig.align='center', fig.width=10, fig.height=10, fig.cap="Scatter plot of breast cancer dataset"}
@@ -284,16 +285,16 @@ corrplot(
   main = NULL
 )
 ```
+-->
+\newpage
 
-<!--
 * Correlation matrix
 
-```{r}
+```{r, tidy=FALSE, fig.align='center', fig.width=7, fig.height=7, fig.cap="Correlation plot of breast cancer dataset"}
 cor_matrix <- cor(data[2:31])
 corrplot(cor_matrix, method = "color", tl.cex = 0.5, 
          title = "Correlation Heatmap", mar = c(0,0,1,0))
 ```
--->
 
 ## **Principal Component Analysis (PCA)**
 <!--

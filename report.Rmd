@@ -1,18 +1,17 @@
 ---
 title: |
   | **Assignment:**
-  | Classification of ... using PCA, Clustering analysis, and ANOVA
-author: "Group 7"
-date: "07/12/2023"
+  | Classification of tumors using PCA, Clustering analysis, and ANOVA
+date: "06/06/2024"
 output:
   pdf_document:
     fig_caption: yes
     number_sections: yes
     keep_tex: no
     toc: no
-    toc_depth: 3
+    # toc_depth: 3
   html_document:
-    toc: no
+    # toc: no
     toc_depth: '3'
     df_print: paged
 jelcodes: A00, B11, C22
@@ -30,13 +29,12 @@ csl: apa.csl
 # ``` -->
 
 
-|  **ID** 	|       **Member**       	|        **Faculty**       	|
-|:-------:	|:----------------------:	|:------------------------:	|
-| 2270578 	| Bui Thi Thu Ha         	| Biotechnology            	|
-| 2370500 	| Le Duc Khoan   	| Computer Science         	|
-| 2270522 	| Pham Nguyen Nhat Quang 	| Mechatronics Engineering 	|
-| 2370069 	| Nguyen Thi Thu Ha      	| Chemical Engineering     	|
-| 2370041 	| Nguyen Cam Uyen        	| Chemical Engineering     	|
+|  **ID** 	|       **Member**       	|    **Faculty**   	|
+|:-------:	|:----------------------:	|:----------------: |
+| 2370500 	| Le Duc Khoan   	        | Computer Science  |
+| 2270522 	| Tran Trung Thai       	| Computer Science  |
+| 1912046 	| Ngo Minh Hong Thai     	| Computer Science  |
+| 2011290 	| Tran Hoang Nhat Huy    	| Computer Science  |
 
 \newpage
 
@@ -54,9 +52,7 @@ Trang 1:
 
 title: "Assignment Report"
 
-author: "Group 7"
-
-year: "2023"
+year: "2024"
 
 program: "Department ..."
 
@@ -69,8 +65,6 @@ signature2: "person 2"
 signature3: "person 3"
 
 signature4: "person 4"
-
-signature5: "person 5"
 
 -->
 
@@ -98,7 +92,17 @@ Trang 4
 -->
 
 # **Introduction**
+Medical analysis encompasses a wide array of methodologies and technologies aimed at understanding, diagnosing, treating, and preventing diseases and medical conditions. It plays a pivotal role in healthcare, utilizing various data sources such as clinical records, medical imaging, genetic information, and laboratory tests to derive insights that aid healthcare professionals in delivering optimal patient care. One significant application of medical analysis is in the field of oncology, particularly in the diagnosis and treatment of breast cancer. The Breast Cancer Wisconsin (Diagnostic) Data Set serves as a fundamental resource in this domain, offering a comprehensive collection of clinical and imaging data derived from fine needle aspirates (FNAs) of breast masses. This dataset, widely utilized in machine learning and data mining research, provides detailed features describing cell nuclei characteristics, allowing for the development and validation of predictive models to distinguish between benign and malignant breast tumors. Through medical analysis of datasets like the Breast Cancer Wisconsin (Diagnostic) Data Set, researchers and healthcare practitioners strive to improve early detection, prognosis, and treatment outcomes for breast cancer patients, ultimately advancing the field of oncology and enhancing patient care.
 
+In the domain of medical analysis, the integration of advanced methodologies such as Principal Component Analysis (PCA), Hierarchical Clustering play pivotal roles in unraveling complex datasets like the Breast Cancer Wisconsin (Diagnostic) Data Set. This report embarks on an exploration of these analytical techniques and their application in unraveling crucial insights into breast cancer diagnosis and prognosis.
+
+PCA serves as a cornerstone in dimensionality reduction, offering a means to distill the multidimensional complexity of medical datasets into a more manageable form. By transforming the original features into a smaller set of uncorrelated variables, PCA facilitates visualization, pattern recognition, and the identification of critical factors contributing to breast cancer diagnosis. In the context of the Breast Cancer Wisconsin (Diagnostic) Data Set, PCA holds promise in elucidating key biomarkers and phenotypic traits indicative of tumor malignancy.
+
+Complementing PCA, Hierarchical Clustering offers a powerful method for uncovering inherent structures within the dataset. By grouping similar data points into clusters based on their similarity or dissimilarity, Hierarchical Clustering provides insights into the natural organization of the data, potentially revealing distinct subgroups of breast tumors or patient profiles. Through this clustering approach, patterns and correlations among variables can be discerned, contributing to a deeper understanding of breast cancer heterogeneity.
+
+In addition to PCA and Hierarchical Clustering, the inclusion of ANOVA adds another layer of statistical rigor to the analysis. ANOVA enables the assessment of differences in means across multiple groups, allowing for the identification of significant variations in clinical or molecular features among different tumor types or patient cohorts. By incorporating ANOVA into the analytical framework, this report aims to elucidate the underlying factors driving breast cancer progression and treatment response, ultimately guiding clinical decision-making and personalized therapeutic interventions.
+
+Through the integration of PCA, Hierarchical Clustering, and ANOVA, this report endeavors to unravel the complex landscape of breast cancer and pave the way for more precise diagnostic and therapeutic strategies. By leveraging these advanced analytical techniques, healthcare practitioners can gain deeper insights into the underlying mechanisms of breast cancer pathogenesis, ultimately leading to improved patient outcomes and enhanced precision in clinical practice.
 
 <!--
 http://doi.org/10.1109/TIM.2008.925015
@@ -107,24 +111,52 @@ https://doi.org/10.1016/j.jfca.2016.04.001
 https://link.springer.com/article/10.1007/s00217-005-1169-5
 -->
 
-# **Research Methods**
+# **Methods**
 
 ## **Data description**
 
-The breast cancer dataset contains various features related to breast mass characteristics derived from digitized images of fine needle aspirate (FNA) of breast masses. It contains 32 variables, with 2 information variables: 
+The Breast Cancer Wisconsin (Diagnostic) Data Set is a well-known dataset used for machine learning and data mining tasks, particularly in the context of medical research. It provides data for breast cancer diagnosis, where each sample is described by a set of features derived from digitized images of fine needle aspirates (FNAs) of breast masses. This dataset is widely used for developing and testing classification algorithms aimed at distinguishing between benign and malignant tumors.
+
+The breast cancer datatset contains 569 samples of breast cancer cases. There is no missing attribute values in the dataset. Each sample is described by 32 variables, with 2 information variables: 
+
 1. ID: Identifier for each patient. 
+
 2. Diagnosis: The diagnosis of the breast mass (M = malignant, B = benign). 
-and 30 feature variables: 
-1. Radius (mean, se, worst): Mean of distances from the center to points on the perimeter. 
-2. Texture (mean, se, worst): Standard deviation of gray-scale values. 
-3. Perimeter (mean, se, worst): Perimeter of the mass. 
-4. Area (mean, se, worst): Area of the mass. 
-5. Smoothness (mean, se, worst): Local variation in radius lengths. 
-6. Compactness (mean, se, worst): 
-7. Concavity (mean, se, worst): Severity of concave portions of the contour. 
-8. Concave points (mean, se, worst): Number of concave portions of the contour. 
-9. Symmetry (mean, se, worst): Symmetry of the mass. 
-10. Fractal dimension (mean, se, worst): "Coastline approximation" - a measure of the complexity of the contour.
+
+and 30 numerical feature variables, resulting by computing 10 real-valued features in 3 metrics (mean, worst and se value): 
+
+1. Radius: The radius of an individual nucleus is measured by averaging the length of radius line segments defined by centroid and individual mass points.
+
+2. Texture: The texture of the cell nucleus is measured by finding the variance of the gray scale intensities in the component pixels
+
+3. Perimeter: The total distance between the mass points constitutes the nuclear perimeter.
+
+4. Area: Nuclear area is measured simply by counting the number of pixels on the interior of the mass and adding one-half of the pixels in the perimeter.
+
+5. Smoothness: The smoothness of a nuclear contour is quantified by measuring the difference between the length of a radial line and the mean length of the lines surrounding it. This is similar to the curvature energy computation in the mass.
+
+![Radial Lines used for Smoothness Computation](image/smoothness.png){width=30%}
+
+6. Compactness: Compactness is a shape descriptor used to quantify how closely an object's shape resembles a circle. It combines perimeter and area to measure the compactness of cell nuclei using the formula perimeter^2/area. This dimensionless value is minimized by a perfect circle and increases with the irregularity of the boundary. However, this measure also increases for elongated cell nuclei, which do not necessarily indicate a higher likelihood of malignancy. Additionally, the feature tends to be biased upward for small cells due to decreased accuracy caused by digitization. To address the fact that no single shape measurement fully captures the concept of "irregularity," we employ several different shape features.
+
+7. Concavity: In a further attempt to capture shape information, we measure the number and severity of concavities or indentations in a cell nucleus by drawing chords between non-adjacent contour points and assessing how much the actual boundary of the nucleus deviates inward from each chord. This parameter is significantly influenced by the length of these chords, with shorter chords better capturing small concavities. We chose to emphasize small indentations since larger shape irregularities are already addressed by other features.	
+
+![Chords used to Compute Concavity](image/concavity.png){width=30%}
+
+8. Concave points: This feature is similar to Concavity but measures only the number, rather than the magnitude, of contour concavities.
+
+9. Symmetry: To measure symmetry, we first identify the major axis, which is the longest chord passing through the center of the cell. We then measure the difference in lengths between lines drawn perpendicular to the major axis and extending to the cell boundary in both directions. Special attention is given to cases where the major axis intersects the cell boundary due to a concavity.
+
+![Segments used in Symmetry Computation](image/symmetry.png){width=30%}
+
+10. Fractal dimension: The fractal dimension of a cell is approximated using the "coastline approximation".9 The perimeter of the nucleus is measured using increasingly larger 'rulers. As the ruler size increases, decreasing the precision of the measurement, the observed perimeter decreases. Plotting these to values on a log scale and measuring the downward slope gives (the negative of) an approximation to the fractal dimension. As with all the shape features, a higher value corresponds to a less regular contour and thus to a higher probability of malignancy.
+
+![Sequence of Measurements for Computing Fractal Dimension](image/fractal_dimension.png){width=90%}
+
+The mean value, extreme (largest) value (mean of the three largest values) and standard error (se) of each feature are computed for each image. The extreme values are the most intuitively useful for the problem at hand, since only a few malignant cells may occur in a given sample.
+
+The second attribute in the dataset, which is Diagnosis variable, serves as the class identifier, with values in 2 distinct types: M is Malignant and B is Benign. The class distribution indicates that there are 357 instances for class B and 212 instances for class M.
+
 <!--
 - Origin and method of collecting data on the chemical composition of wines from three cultivars.
 - Describe the structure of the data set, attributes and data columns.
@@ -159,18 +191,7 @@ data <- data %>%
     rename("concave_points_se" = "concave points_se",
           "concave_points_worst" = "concave points_worst",
           "concave_points_mean" = "concave points_mean")
-```
-
-Remove NA rows:
-
-```{r}
-data <- na.omit(data)
-```
-
-```{r}
-cor_matrix <- cor(data[2:31])
-corrplot(cor_matrix, method = "color", tl.cex = 0.5, 
-         title = "Correlation Heatmap", mar = c(0,0,1,0))
+data <- as.data.frame(data)
 ```
 
 <!--
@@ -180,8 +201,124 @@ corrplot(cor_matrix, method = "color", tl.cex = 0.5,
 
 ### Data preparation
 
+* Missing data
+
+```{r}
+# Check for missing values
+missing_values <- colSums(is.na(data))
+
+# Print columns with missing values
+print(missing_values)
+
+#Remove NA rows:
+data <- na.omit(data)
+```
+
+* Outliers
+
+<!--
+```{r}
+library(rstatix)
+
+#identify_outliers(
+#  data = data,
+#  variable = c("radius_mean")
+#)
+tmp <- data
+for (col in colnames(data)){
+  if (col != "diagnosis"){
+    outliers <- data %>%
+      identify_outliers(variable = col, )
+    tmp <- anti_join(tmp, outliers)
+  }
+}
+
+data
+
+tmp
+```
+-->
+
 ### Data exploration
 
+* Boxplot 
+
+```{r, include=FALSE, message=FALSE}
+cap = c()
+
+for (col in colnames(data)){
+  cap[col] <- paste("Boxplot of Diagnosis vs.", colnames(data[col]))
+  cap[col] <- gsub("_", "\\\\_", as.character(cap[col]))
+}
+```
+
+```{r, tidy=FALSE, fig.align='center', fig.width=4, fig.height=4, fig.cap=cap[2:31]}
+for (col in colnames(data)){
+  if (col != 'diagnosis'){
+    # boxplot(df.clean[, col], main=col)
+    boxplot(data[, col] ~ data[, 'diagnosis'], xlab='diagnosis', ylab=col, main = NULL) 
+  }
+}
+```
+
+\newpage
+* Histogram 
+
+```{r, include=FALSE, message=FALSE}
+cap = c()
+
+for (col in colnames(data)){
+  cap[col] <- paste("Histogram of", colnames(data[col]))
+  cap[col] <- gsub("_", "\\\\_", as.character(cap[col]))
+}
+```
+
+```{r, tidy=FALSE, fig.align='center', fig.width=4, fig.height=4, fig.cap=cap}
+for (col in colnames(data)){
+  if(col != 'diagnosis'){
+    hist(data[, col], xlab=col, main = NULL)
+  }
+  else{
+    barplot(table(data[, col]), xlab=col, ylab='frequency', main = NULL)
+  }
+}
+```
+
+<!--
+* Scatter plot (pair)
+
+```{r, tidy=FALSE, fig.align='center', fig.width=10, fig.height=10, fig.cap="Scatter plot of breast cancer dataset"}
+  pairs(
+    subset(data, select=-diagnosis),
+    col = hcl.colors(3, "Temps")[data[, 'diagnosis']],
+    cex=0.5,
+    main = NULL
+  )
+```
+
+* Correlation plot
+
+```{r,  tidy=FALSE, fig.align='center', fig.width=5, fig.height=5, fig.cap="Correlation plot of breast cancer dataset"}
+df.cor <- cor(data[-1], method = "pearson")
+corrplot(
+  df.cor, 
+  is.corr=F, 
+  type = "lower", 
+  tl.cex = 0.5, 
+  cl.cex = 0.5, 
+  main = NULL
+)
+```
+-->
+\newpage
+
+* Correlation matrix
+
+```{r, tidy=FALSE, fig.align='center', fig.width=7, fig.height=7, fig.cap="Correlation plot of breast cancer dataset"}
+cor_matrix <- cor(data[2:31])
+corrplot(cor_matrix, method = "color", tl.cex = 0.5, 
+         title = "Correlation Heatmap", mar = c(0,0,1,0))
+```
 
 ## **Principal Component Analysis (PCA)**
 <!--
@@ -368,18 +505,6 @@ acc <- table(comparison)
 acc
 ```
 
-###  HC interpretation
-
-As a result of the cluster analysis, specific quantitative factors that identified the distinctive qualities and contributions of every cluster were found to exist. There are 2 cluster:
-
-- Cluster 1 contains about 90% of B tumors and 10% of M tumors.
-
-- Cluster 2 contains about 10% of B tumors and 90% of M tumors.
-
-First of all, Cluster 1, which is composed of more than 90% of benign tumors, has characteristics by having almost all values quite lower when compare to overall. Cluster 1 type are distinguished by characteristics that stand out: symmetry, fractal dimension, texture, smoothness, concavity, compactness, concave points, area and so on.
-
-Opposite to cluster 2, which consists primarily of malignant tumors, has unique characteristics that are indicated by increased almost all values relative to the dataset's average values. 
-
 
 ## **Analysis of Variance (ANOVA)**
 
@@ -390,7 +515,7 @@ Analysis of variance (ANOVA) is a statistical technique that allows us to test t
 ## **PCA and HC classification**
 <!--
 - Classification results based on PCA and HC.
-- Charts and tables illustrate the distinction between types of wine.
+- Charts and tables illustrate the distinction between types of breast cancerr.
 -->
 
 ### PCA interpretation
@@ -411,13 +536,15 @@ Finally, the third principle component represented 9.55% of the variance, exhibi
 
 ### HC interpretation
 
-As a result of the cluster analysis, specific quantitative factors that identified the distinctive qualities and contributions of every cluster were found to exist.
+As a result of the cluster analysis, specific quantitative factors that identified the distinctive qualities and contributions of every cluster were found to exist. There are 2 cluster:
 
-First of all, Cluster 1, which is composed of Type 3 wines, has distinctive characteristics by having significantly higher values in a variety of qualities. Cluster 1 wines (Type 3) are distinguished from other wines in the dataset by characteristics that stand out: malic acid, color intensity, nonflavanoid phenols, alkalinity of ash, proline, proanthocyanins, total phenols, hue, flavanoids, and OD280/OD315 of diluted wines.
+- Cluster 1 contains about 90% of B tumors and 10% of M tumors.
 
-Cluster 2, which consists primarily of Type 2 wines, has unique characteristics that are indicated by increased Hue, Alcalinity, Dilution, and Ash values relative to the dataset's average values. On the other hand, this cluster shows lower values in Alcohol, Magnesium, Proline, Color intensity, and Malic acid when compared to the overall means of the dataset, highlighting its distinct characteristics within the dataset.
+- Cluster 2 contains about 10% of B tumors and 90% of M tumors.
 
-Lastly, Cluster 3 of Type 1 wines, which are distinguished by greater amounts of Phenols, Alcohol, Proline, Flavanoids, Dilution, Proanthocyanins, Magnesium, Hue, Ash, Color intensity, and Malic acid. Its unique composition within the dataset is further highlighted by the fact that this cluster has lower levels of Alcalinity and Nonflavanoid phenols when compared to the dataset's overall averages.
+First of all, Cluster 1, which is composed of more than 90% of benign tumors, has characteristics by having almost all values quite lower when compare to overall. Cluster 1 type are distinguished by characteristics that stand out: symmetry, fractal dimension, texture, smoothness, concavity, compactness, concave points, area and so on.
+
+Opposite to cluster 2, which consists primarily of malignant tumors, has unique characteristics that are indicated by increased almost all values relative to the dataset's average values.
 
 ### Conclusion from PCA and HC
 
@@ -974,19 +1101,29 @@ plot.PCA(res.pca,
 
 ### Keypoints from analysis and testing
 
-The findings, particularly from PCA, delineate the pivotal role of specific chemical components in shaping the differentiation of wine types. PC1, chiefly influenced by Total Phenols, Flavonoid Phenols, Proanthocyanins, and OD280/OD315, predominantly reflects taste intensity. This implies that the strength of taste emerges as a defining characteristic in classifying wines. Conversely, PC2, representing alcohol and fermentation levels through variables such as Alcohol Content, Proline, Color Intensity, Ash Levels, and Magnesium Levels, underscores the importance of fermentation-related attributes in delineating wine types.
+The findings, particularly from PCA, delineate the pivotal role of specific features related to breast mass characteristics derived from digitized images of FNA of breast masses in diagnosing the existing of breast cancer.
 
-With hierarchical clustering analysis, the study further accentuates the distinctiveness of each wine type, as evident from the clear demarcation into three discernible clusters (Types 1, 2, and 3). Each cluster exhibits unique chemical characteristics, corroborating the notion that the chemical profile serves as a reliable marker for classification.
+<!--
+PC1, chiefly influenced by Total Phenols, Flavonoid Phenols, Proanthocyanins, and OD280/OD315, predominantly reflects taste intensity. This implies that the strength of taste emerges as a defining characteristic in classifying wines. Conversely, PC2, representing alcohol and fermentation levels through variables such as Alcohol Content, Proline, Color Intensity, Ash Levels, and Magnesium Levels, underscores the importance of fermentation-related attributes in delineating wine types.
+-->
 
-The conducted ANOVA tests further validate and emphasize the significance of these chemical components in distinguishing between the wine types. Variables such as Flavanoids, Alcohol content, Color intensity, Proline content, and Proanthocyanins exhibit distinctive levels among the wine types, significantly contributing to the classification based on their chemical profiles. Despite Ash and Alcalinity offering limited insights into the differentiation of certain wine types individually, their collective data elucidates similarities among these types.
+With hierarchical clustering analysis, the study further emphasized the heterogeneity in the benign and malignant breast cancer patient groups, as evident by the clear division into two clusters (M or B tumors).
+
+The conducted ANOVA tests further validate and emphasize the significance of these chemical components in distinguishing between the wine types.
+
+<!--
+Variables such as Flavanoids, Alcohol content, Color intensity, Proline content, and Proanthocyanins exhibit distinctive levels among the wine types, significantly contributing to the classification based on their chemical profiles. Despite Ash and Alcalinity offering limited insights into the differentiation of certain wine types individually, their collective data elucidates similarities among these types.
+-->
 
 ### Statistical significance to the real-world problem
 
+<!--
 For the purpose of improving strength of the taste of wines: Winemakers can leverage this work to tailor the Flavanoid content in wines, influencing the taste, aroma, and overall sensory experience. Consumers, on the other hand, can use Flavanoid levels as a factor in selecting wines based on their preferred flavor profiles. Proline is associated with taste and quality. Wine manufacturers can use this information to craft wines with specific flavor profiles. Consumers looking for particular taste characteristics can consider Proline content in their wine choices. The significant differences in Proanthocyanins content among wine types indicate that this component is a key factor in differentiating between the wines. Understanding the role of Proanthocyanins is valuable for vintner aiming to create wines with specific taste profiles.
 
 With the aim of levitating alcohol and fermentation levels: Winemakers can optimize Color intensity to create visually distinct wines. Consumers may consider color as a factor in wine selection, associating it with taste preferences or the overall appeal of the wine. Producers of wines can adjust Alcohol content to create wines with specific characteristics, catering to different preferences and occasions. Consumers may use this information to make choices based on desired Alcohol levels in wines. The significant relationships between Ash, Alcalinity, and wine types suggest that these components contribute to the classification of wines. Wine producers can use this information to adjust and optimize these elements to achieve desired characteristics in their wines. 
 
 In essence, the statistical significance of these chemical components in wine types provides actionable insights for both wine merchants and consumers. It enables winemakers to craft wines with specific characteristics and empowers consumers to make informed choices based on their preferences, whether related to flavor, visual appeal, or health considerations.
+-->
 
 ## **Comments and Limitations**
 <!--
@@ -996,16 +1133,19 @@ In essence, the statistical significance of these chemical components in wine ty
 
 ### Recommendations on data quality
 
-In the pursuit of comprehensive data analysis, refining or improving the data table is crucial: firstly, ensuring consistency across columns, especially in categorical variables like 'Type,' to eliminate discrepancies and ensure accurate labeling. Next, leveraging feature engineering techniques to enhance analysis depth by creating new features or interaction terms based on domain knowledge. Employing cross-validation techniques becomes crucial for predictive modeling, assessing model performance comprehensively for robust findings. Thorough documentation of data preprocessing steps, including handling missing values and outliers, ensures transparency and reproducibility. Additionally, establishing a systematic process for ongoing dataset maintenance and updates guarantees sustained data quality and accuracy, especially for periodically updated datasets. These practices collectively fortify the integrity and reliability of the dataset and analyses conducted upon it.
+In the pursuit of comprehensive data analysis, refining or improving the data table is crucial: firstly, ensuring consistency across columns, especially in categorical variables like 'diagnose,' to eliminate discrepancies and ensure accurate labeling. Next, leveraging feature engineering techniques to enhance analysis depth by creating new features or interaction terms based on domain knowledge. Employing cross-validation techniques becomes crucial for predictive modeling, assessing model performance comprehensively for robust findings. Thorough documentation of data preprocessing steps, including handling missing values, ensures transparency and reproducibility. Additionally, establishing a systematic process for ongoing dataset maintenance and updates guarantees sustained data quality and accuracy, especially for periodically updated datasets. These practices collectively fortify the integrity and reliability of the dataset and analyses conducted upon it.
 
-### Classification method limitations
+### Data and classification method limitations
 
-While the application of principal component analysis (PCA) is combined with hierarchical clustering and ANOVA provided the ease to visualize the classification principles and choosing the aspects of the data that contributed most, this method is
-incapable of generate gratifying classification results, and no correct recognition was given out in the research. Thus, this study has limited capacity for precise interpretation, and require integratation of additional analytical techniques or refining existing ones might enhance the method's precision, allowing for more precise differentiation among wine types.
+PCA is a powerful and flexible technique but it may lose some information and details when reducing data size. This can lead to simplification or distortion of the data and make it more difficult to identify outliers or anomalies. Another disadvantage of PCA is that it can be sensitive to scaling and outliers, which can affect the quality and stability of the results. 
 
-For instance, principal component analysis was used in the k-nearest neighbor classification of a study on the classification of wine types using the same dataset in order to address the significant multicollinearity among the explanatory factors (@barth_katumullage_yang_cao_2021). According to the study, when kNN and PCA are merged, the resulting classifier is significantly easier to understand and performs comparably to kNN across all 13 variables.
+For HC, this is a solid, flexible technique that is easy to understand and apply. However, it does not guarantee optimal results or the best possible clustering. The results can depend on the order in which data points are processed, making it difficult to reproduce or generalize them to other data sets with similar characteristics. It cannot handle categorical variables effectively because they cannot be converted to numeric values and thus will not produce meaningful clusters if used in hierarchical clustering algorithms.
 
-The two stages of the wine classification process used by (@4537164 )were: (1) principal component analysis or wavelet transform to extract features from the aroma data; and (2) linear discriminant analysis, radial basis function neural networks, and support vector machines to identify patterns in the data.
+Although applying PCA combined with hierarchical clustering and ANOVA makes it easier to visualize taxonomies and select the aspects of the data that contribute the most, this method cannot yield satisfactory classification results and high accuracy. Also, each classification method has its limitations. 
+
+Thus, this study has limited capacity for precise interpretation, and require integratation of additional analytical techniques or refining existing ones might enhance the method's precision, allowing for more precise of breast cancer patients.
+
+** Propose some method like K-means, DNN, ... **
 
 \newpage
 
@@ -1013,5 +1153,3 @@ The two stages of the wine classification process used by (@4537164 )were: (1) p
 <!--
 - List of documents, books, articles used and referenced during the research process.
 -->
-
-

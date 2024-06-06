@@ -32,7 +32,7 @@ csl: apa.csl
 |  **ID** 	|       **Member**       	|    **Faculty**   	|
 |:-------:	|:----------------------:	|:----------------: |
 | 2370500 	| Le Duc Khoan   	        | Computer Science  |
-| 2270522 	| Tran Trung Thai       	| Computer Science  |
+| 2014482 	| Tran Trung Thai       	| Computer Science  |
 | 1912046 	| Ngo Minh Hong Thai     	| Computer Science  |
 | 2011291 	| Tran Hoang Nhat Huy    	| Computer Science  |
 
@@ -214,9 +214,9 @@ print(missing_values)
 data <- na.omit(data)
 ```
 
+<!--
 * Outliers
 
-<!--
 ```{r}
 library(rstatix)
 
@@ -490,12 +490,12 @@ Based on the agglomerative coefficients:
 - **Single linkage** has the lowest coefficient (0.8054129), suggesting it is the least effective method for your dataset in terms of forming well-defined clusters.
 
 You might consider using Ward's method for clustering your data due to its superior performance in your analysis.
-```{r, fig.align='center', fig.width=5, fig.height=5, fig.cap=c("Hierarchical Clustering with Single Linkage")}
+```{r, fig.align='center', fig.width=4, fig.height=4, fig.cap=c("Hierarchical Clustering with Single Linkage")}
 hc <- agnes(scaled_data, method = "single")
 sub_grp <- cutree(hc, k = 2)
 fviz_cluster(list(data = scaled_data, cluster = sub_grp))
 ```
-```{r, fig.align='center', fig.width=5, fig.height=5, fig.cap=c("Hierarchical Clustering with Ward Linkage")}
+```{r, fig.align='center', fig.width=4, fig.height=4, fig.cap=c("Hierarchical Clustering with Ward Linkage")}
 hc <- agnes(scaled_data, method = "ward")
 sub_grp <- cutree(hc, k = 2)
 fviz_cluster(list(data = scaled_data, cluster = sub_grp))
@@ -1053,8 +1053,8 @@ When we used the combination of worst smoothness and symmetric, this leads to a 
 *   Alternative Hypothesis (H1): There is significant relationship between mean of smoothness and perimeter with benign and malignant tumors.
 
 ```{r}
-    # Correlation tests or t-tests comparing mean of smoothness and perimeter \
-    # across benign and malignant tumors.
+    # Correlation tests or t-tests comparing mean of smoothness \
+    # and perimeter across benign and malignant tumors.
     label <- factor(data$diagnosis)
     label <- match(label, unique(label))
     cor.test(data$perimeter_mean, data$smoothness_mean)
@@ -1110,42 +1110,35 @@ plot.PCA(res.pca,
 # **Conclusion and Discussion**
 
 ## **Summary of results**
+
+```{=html}
 <!--
 - Summarize important findings from analysis and testing.
 - Evaluate the level of success of the classification and the strengths/weaknesses of the method.
 -->
-
+```
 ### Keypoints from analysis and testing
 
-The findings, particularly from PCA, delineate the pivotal role of specific features related to breast mass characteristics derived from digitized images of FNA of breast masses in diagnosing the existing of breast cancer.
+In this report, we explored and analyzed a data set in the medical field - the Breast Cancer Wisconsin dataset. The analysis process, particularly from PCA, delineate the pivotal role of specific features related to breast mass characteristics derived from digitized images of FNA of breast masses in diagnosing the existing of breast cancer. As we've analyzed in the previous section, it can be seen that there are many factors that affect the results of diagnosis through FNA (Fine Needle Aspirate). Specifically, the factors related to the Concavity of cell nuclei, as all the metrics of this factor are discriminative for the diagnostic results according to the PCA analysis and ANOVA testing results. This implies that Concavity is a defining characteristic in classifying tumor types. Also, the mean and the worst metrics on other factors like Nucleus Radius, Perimeter, Area and Compactness also affect the diagnosis result. Therefore, it is necessary to focus on these two measurements during the diagnostic process based on FNA.
 
-<!--
-PC1, chiefly influenced by Total Phenols, Flavonoid Phenols, Proanthocyanins, and OD280/OD315, predominantly reflects taste intensity. This implies that the strength of taste emerges as a defining characteristic in classifying wines. Conversely, PC2, representing alcohol and fermentation levels through variables such as Alcohol Content, Proline, Color Intensity, Ash Levels, and Magnesium Levels, underscores the importance of fermentation-related attributes in delineating wine types.
--->
+With hierarchical clustering analysis, the study further emphasized the heterogeneity in the benign and malignant breast cancer patient groups, as evident by the clear division into two clusters (M or B tumors). Also. the conducted ANOVA tests further validate and emphasize the significance of these components in distinguishing between the tumor types.
 
-With hierarchical clustering analysis, the study further emphasized the heterogeneity in the benign and malignant breast cancer patient groups, as evident by the clear division into two clusters (M or B tumors).
-
-The conducted ANOVA tests further validate and emphasize the significance of these chemical components in distinguishing between the wine types.
-
+```{=html}
 <!--
 Variables such as Flavanoids, Alcohol content, Color intensity, Proline content, and Proanthocyanins exhibit distinctive levels among the wine types, significantly contributing to the classification based on their chemical profiles. Despite Ash and Alcalinity offering limited insights into the differentiation of certain wine types individually, their collective data elucidates similarities among these types.
 -->
-
+```
 ### Statistical significance to the real-world problem
 
-<!--
-For the purpose of improving strength of the taste of wines: Winemakers can leverage this work to tailor the Flavanoid content in wines, influencing the taste, aroma, and overall sensory experience. Consumers, on the other hand, can use Flavanoid levels as a factor in selecting wines based on their preferred flavor profiles. Proline is associated with taste and quality. Wine manufacturers can use this information to craft wines with specific flavor profiles. Consumers looking for particular taste characteristics can consider Proline content in their wine choices. The significant differences in Proanthocyanins content among wine types indicate that this component is a key factor in differentiating between the wines. Understanding the role of Proanthocyanins is valuable for vintner aiming to create wines with specific taste profiles.
+For the purpose of assisting in the process of diagnosing breast cancer tumors, one of the most dangerous and relatively common diseases today, patients and also experts should focus on the factor of Concavity of NFA results. The larger the values of Worst and Mean Concavity, the more likely it is that the diagnosis tumors are malignant. In addition, the factors such as Radius, Perimeter, Area and Compactness also need to be focused as they all have a relatively significant influence on the diagnostic results. For all the measurements mentioned above, metrics Mean and Worst should be more focused than Standard Error as these are the metrics that best demonstrate the distinction between tumor types. The elevating values of these metrics are associated with a greater likelihood of tumors being diagnosed as malignant.
 
-With the aim of levitating alcohol and fermentation levels: Winemakers can optimize Color intensity to create visually distinct wines. Consumers may consider color as a factor in wine selection, associating it with taste preferences or the overall appeal of the wine. Producers of wines can adjust Alcohol content to create wines with specific characteristics, catering to different preferences and occasions. Consumers may use this information to make choices based on desired Alcohol levels in wines. The significant relationships between Ash, Alcalinity, and wine types suggest that these components contribute to the classification of wines. Wine producers can use this information to adjust and optimize these elements to achieve desired characteristics in their wines. 
+Thereby, the analysis and evaluation of the above factors bring many meanings in diagnosing patients' breast cancer. Focusing on important factors can help make the diagnosis more accurate and faster. Thereby, patients are diagnosed and treated promptly, avoiding future risks.
 
-In essence, the statistical significance of these chemical components in wine types provides actionable insights for both wine merchants and consumers. It enables winemakers to craft wines with specific characteristics and empowers consumers to make informed choices based on their preferences, whether related to flavor, visual appeal, or health considerations.
--->
+## **Limitations**
 
-## **Comments and Limitations**
-<!--
-- Evaluate the reliability of the results and limitations of the study.
-- Propose directions for further development and research.
--->
+Although factors affecting diagnosis results have been identified through analyzing data on breast cancer tumors. However, the data being used is still not large enough to provide the most general assessment of NFA results. Therefore, collecting more analytical data is necessary for the generalization of analyzing results and making suggestions on which factors to focus on. Also, with bigger and more general dataset, we can provide the most accurate analysis results, avoiding misunderstanding and confusion for patients.
+
+In addition, Hierarchical clustering (HC) models have achieved significant results, but are still not capable of distinguishing between diagnostic results. In the future, more powerful models in the classification problem can be used such as Support Vector Machine (SVM) or Neural Network can be applied. From there, a suggestion model with higher accuracy was built, supporting the diagnosis of breast cancer for patients.
 
 ### Recommendations on data quality
 
@@ -1153,19 +1146,20 @@ In the pursuit of comprehensive data analysis, refining or improving the data ta
 
 ### Data and classification method limitations
 
-PCA is a powerful and flexible technique but it may lose some information and details when reducing data size. This can lead to simplification or distortion of the data and make it more difficult to identify outliers or anomalies. Another disadvantage of PCA is that it can be sensitive to scaling and outliers, which can affect the quality and stability of the results. 
+PCA is a powerful and flexible technique but it may lose some information and details when reducing data size. This can lead to simplification or distortion of the data and make it more difficult to identify outliers or anomalies. Another disadvantage of PCA is that it can be sensitive to scaling and outliers, which can affect the quality and stability of the results.
 
 For HC, this is a solid, flexible technique that is easy to understand and apply. However, it does not guarantee optimal results or the best possible clustering. The results can depend on the order in which data points are processed, making it difficult to reproduce or generalize them to other data sets with similar characteristics. It cannot handle categorical variables effectively because they cannot be converted to numeric values and thus will not produce meaningful clusters if used in hierarchical clustering algorithms.
 
-Although applying PCA combined with hierarchical clustering and ANOVA makes it easier to visualize taxonomies and select the aspects of the data that contribute the most, this method cannot yield satisfactory classification results and high accuracy. Also, each classification method has its limitations. 
+Although applying PCA combined with hierarchical clustering and ANOVA makes it easier to visualize taxonomies and select the aspects of the data that contribute the most, this method cannot yield satisfactory classification results and high accuracy. Also, each classification method has its limitations.
 
 Thus, this study has limited capacity for precise interpretation, and require integratation of additional analytical techniques or refining existing ones might enhance the method's precision, allowing for more precise of breast cancer patients.
 
-** Propose some method like K-means, DNN, ... **
 
-\newpage
 
-# **References**
+```{=html}
 <!--
+\newpage
+# **References**
 - List of documents, books, articles used and referenced during the research process.
 -->
+```

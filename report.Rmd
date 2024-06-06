@@ -34,7 +34,7 @@ csl: apa.csl
 | 2370500 	| Le Duc Khoan   	        | Computer Science  |
 | 2270522 	| Tran Trung Thai       	| Computer Science  |
 | 1912046 	| Ngo Minh Hong Thai     	| Computer Science  |
-| 2011290 	| Tran Hoang Nhat Huy    	| Computer Science  |
+| 2011291 	| Tran Hoang Nhat Huy    	| Computer Science  |
 
 \newpage
 
@@ -252,11 +252,15 @@ for (col in colnames(data)){
 }
 ```
 
-```{r, tidy=FALSE, fig.align='center', fig.width=4, fig.height=4, fig.cap=cap[2:31]}
+```{r, tidy=FALSE, fig.align='center', out.width="55%", fig.cap=cap[2:31]}
 for (col in colnames(data)){
   if (col != 'diagnosis'){
-    # boxplot(df.clean[, col], main=col)
-    boxplot(data[, col] ~ data[, 'diagnosis'], xlab='diagnosis', ylab=col, main = NULL) 
+    boxplot(
+      data[, col] ~ data[, 'diagnosis'], 
+      xlab='diagnosis', 
+      ylab=col, 
+      main = NULL
+    ) 
   }
 }
 ```
@@ -273,7 +277,7 @@ for (col in colnames(data)){
 }
 ```
 
-```{r, tidy=FALSE, fig.align='center', fig.width=4, fig.height=4, fig.cap=cap}
+```{r, tidy=FALSE, fig.align='center', out.width="55%", fig.cap=cap}
 for (col in colnames(data)){
   if(col != 'diagnosis'){
     hist(data[, col], xlab=col, main = NULL)
@@ -410,7 +414,7 @@ plot(
 One technique for studying clusters in the analysis of data is hierarchical clustering. Data is grouped using hierarchical clustering, which builds a hierarchy of groups. There are two approaches to construct this hierarchy: divisive (top-down), in which all data points begin in a single cluster and divide as we proceed down the hierarchy, or agglomerative (bottom-up), in which each data point forms a cluster and pairs of clusters are merged as we travel up the hierarchy. In this work, the linkage criterion is Ward's linkage, and we employ agglomerative hierarchical clustering. The linking criterion defines appropriate distance between sets of observations to use.
 
 
-```{r, tidy=FALSE, fig.align='center', fig.width=5, fig.height=5, fig.cap=c("Hierarchical Clustering plot", "Bar plot of Type vs. cluster percent")}
+```{r, tidy=FALSE, fig.align='center', fig.width=4, fig.height=4, fig.cap=c("Hierarchical Clustering plot", "Bar plot of Type vs. cluster percent")}
 res.hcpc <- HCPC(res.pca, nb.clust=2, graph = FALSE)
 
 fviz_dend(res.hcpc,
@@ -583,7 +587,7 @@ The ANOVA test indicates a highly significant difference in Mean of Concave Poin
 
 #### Visualization:
 
-```{r}
+```{r, fig.align='center', fig.width=6, fig.height=6}
 # Boxplot for Mean of Concave Points
 boxplot(
   concave_points_mean ~ as.factor(diagnosis), 
@@ -630,7 +634,7 @@ The ANOVA test indicates a highly significant difference in Mean of Concavity am
 
 #### Visualization:
 
-```{r}
+```{r, fig.align='center', fig.width=6, fig.height=6}
 # Boxplot for Mean of Concavity
 boxplot(
   concavity_mean ~ as.factor(diagnosis), 
@@ -677,7 +681,7 @@ The ANOVA test indicates a highly significant difference in Worst Concave Points
 
 #### Visualization:
 
-```{r}
+```{r, fig.align='center', fig.width=6, fig.height=6}
 # Boxplot for Worst Concave Points
 boxplot(
   concave_points_worst ~ as.factor(diagnosis), 
@@ -724,7 +728,7 @@ The ANOVA test indicates a highly significant difference in Mean of Compactness 
 
 #### Visualization:
 
-```{r}
+```{r, fig.align='center', fig.width=6, fig.height=6}
 # Boxplot for Mean of Compactness
 boxplot(
   compactness_mean ~ as.factor(diagnosis), 
@@ -972,7 +976,7 @@ when considered alone. (p = 0.7599). Then **accept Hypothesis**.
 
 #### Visualization:
 
-```{r}
+```{r, fig.align='center', fig.width=6, fig.height=6}
 # Boxplot for Mean Fractal dimension
 boxplot(
   fractal_dimension_mean~ as.factor(diagnosis), 
@@ -1007,7 +1011,8 @@ ANOVA for 3 Mean Fractal dimension variables among tumor types.
 ```{r}
 # ANOVA for 3 Mean Fractal dimension variables among tumor types.
 h6 <- lm(
-  fractal_dimension_mean + fractal_dimension_se + fractal_dimension_worst ~ as.factor(diagnosis), 
+  fractal_dimension_mean + fractal_dimension_se + fractal_dimension_worst 
+  ~ as.factor(diagnosis), 
   data = data
 )
 anova(h6)
@@ -1048,7 +1053,8 @@ When we used the combination of worst smoothness and symmetric, this leads to a 
 *   Alternative Hypothesis (H1): There is significant relationship between mean of smoothness and perimeter with benign and malignant tumors.
 
 ```{r}
-    # Correlation tests or t-tests comparing mean of smoothness and perimeter across benign and malignant tumors.
+    # Correlation tests or t-tests comparing mean of smoothness and perimeter \
+    # across benign and malignant tumors.
     label <- factor(data$diagnosis)
     label <- match(label, unique(label))
     cor.test(data$perimeter_mean, data$smoothness_mean)
@@ -1064,10 +1070,20 @@ and tumors (p < 0.001) =\> **reject Hypothesis**. There’s a significant correl
 Additionally, both variables significantly differ among tumors.
 
 #### Visualization
-```{r}
+```{r, fig.align='center', fig.width=6, fig.height=6}
 # Scatterplot for Alcalinity
-plot(smoothness_mean ~ as.factor(diagnosis), data = data, xlab = "Tumors", ylab = "Mean of smoothness", main = "Mean of smoothness across Tumors")
-plot(perimeter_mean ~ as.factor(diagnosis), data = data, xlab = "Tumors", ylab = "Mean of perimeter", main = "Mean of perimeter cross Tumors")
+plot(
+  smoothness_mean ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumors", ylab = "Mean of smoothness", 
+  main = "Mean of smoothness across Tumors"
+)
+plot(
+  perimeter_mean ~ as.factor(diagnosis), 
+  data = data, 
+  xlab = "Tumors", ylab = "Mean of perimeter", 
+  main = "Mean of perimeter cross Tumors"
+)
 
 
 plot.PCA(res.pca,
